@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>قائمة الأصناف  1| Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: #1e1408;
+      background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(201,168,76,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(140,80,20,0.1) 0%, transparent 55%);
+      min-height:100vh;
+      display:flex; flex-direction:column; align-items:center;
+      padding:50px 20px 70px;
+      font-family:'El Messiri', sans-serif;
+    }
+
+    .lang-btn {
+      position:absolute; top:22px; left:22px; z-index:200;
+      background:rgba(250,247,240,0.95);
+      border:1px solid rgba(201,168,76,0.55);
+      color:#7a5530; padding:5px 14px;
+      font-size:11px; letter-spacing:2px; text-transform:uppercase;
+      cursor:pointer; font-family:'El Messiri',sans-serif;
+      font-weight:700; border-radius:2px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.08);
+      opacity:0; pointer-events:none;
+      transition:opacity 0.3s ease;
+    }
+    .lang-btn.visible { opacity:1; pointer-events:auto; }
+    .lang-btn:hover { background:rgba(201,168,76,0.15); color:#5c3d1e; }
+
+    .page {
+      width:100%; max-width:560px; background:#faf7f0;
+      padding:clamp(16px,4vw,32px) clamp(28px,10vw,68px);
+      position:relative;
+      box-shadow:
+        0 0 0 1px #c9a84c,
+        0 0 0 8px #faf7f0,
+        0 0 0 9px rgba(201,168,76,0.5),
+        0 40px 100px rgba(0,0,0,0.55);
+    }
+    .page::before {
+      content:''; position:absolute; inset:14px;
+      border:1px solid rgba(201,168,76,0.22); pointer-events:none;
+    }
+
+    /* HEADER */
+    .header { text-align:center; margin-bottom:32px; }
+    .eyebrow { font-size:18px; letter-spacing:5px; text-transform:uppercase; color:#c9a84c; margin-bottom:16px; display:block; }
+    .logo-circle {
+      width:122px; height:116px; border-radius:50%;
+      border:1px solid rgba(201,168,76,0.5);
+      margin:0 auto 18px;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(201,168,76,0.05); overflow:hidden;
+      box-shadow:0 0 0 4px #faf7f0, 0 0 0 5px rgba(201,168,76,0.2);
+    }
+    .logo-circle img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .logo-fallback { font-size:2rem; opacity:0.35; }
+    .store-title { font-size:clamp(26px,7vw,38px); font-weight:700; color:#1e1208; letter-spacing:2px; margin-bottom:6px; }
+    .store-subtitle { font-size:14px; color:#7a5c3a; }
+
+    /* ORNAMENT */
+    .ornament { display:flex; align-items:center; gap:10px; margin:18px 0; }
+    .ornament-line { flex:1; height:1px; background:linear-gradient(to left, transparent, rgba(201,168,76,0.6)); }
+    [dir="ltr"] .ornament-line { background:linear-gradient(to right, transparent, rgba(201,168,76,0.6)); }
+    .ornament-line.rev { background:linear-gradient(to right, transparent, rgba(201,168,76,0.6)); }
+    [dir="ltr"] .ornament-line.rev { background:linear-gradient(to left, transparent, rgba(201,168,76,0.6)); }
+    .ornament-icon { color:#c9a84c; font-size:13px; flex-shrink:0; }
+
+    /* SECTION */
+    .menu-section { margin-top:30px; }
+    .section-header { text-align:center; margin-bottom:18px; }
+    .section-tag { font-size:8px; letter-spacing:4px; text-transform:uppercase; color:rgba(160,128,48,0.7); display:block; margin-bottom:4px; }
+    .section-title-ar, .section-title-en { font-size:20px; font-weight:700; color:#1e1208; }
+    .section-rule { border:none; border-top:1px solid rgba(201,168,76,0.4); margin:14px 0 20px; }
+
+    /* SUB SECTION (الإضافات) */
+    .sub-section-header { text-align:center; margin:24px 0 0; }
+    .sub-section-title-ar,
+    .sub-section-title-en { font-size:15px; font-weight:700; color:#7a5530; letter-spacing:1px; }
+    .sub-section-rule { border:none; border-top:1px dashed rgba(201,168,76,0.35); margin:10px 0 16px; }
+
+    /* ITEM */
+    .item {
+      display:flex; justify-content:space-between; align-items:baseline;
+      gap:12px; margin-bottom:14px; padding-bottom:12px;
+      border-bottom:1px dashed rgba(201,168,76,0.18);
+    }
+    .item:last-child { border-bottom:none; margin-bottom:0; }
+    .item-info { flex:1; min-width:0; }
+    .item-name { font-size:14px; font-weight:700; color:#1e1208; line-height:1.4; }
+    .item-desc { font-size:11.5px; color:#a08060; margin-top:3px; line-height:1.5; }
+    .item-prices { display:flex; flex-direction:column; gap:2px; flex-shrink:0; text-align:right; }
+    .item-price { font-size:14px; color:#5c3d1e; font-weight:600; white-space:nowrap; }
+
+    /* ITEM with tags */
+    .item-with-tags { margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed rgba(201,168,76,0.18); }
+    .item-with-tags:last-child { border-bottom:none; margin-bottom:0; }
+    .item-with-tags .item-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .item-with-tags .item-name { flex:1; font-size:14px; font-weight:700; color:#1e1208; }
+
+    /* FLAVOR TAGS */
+    .flavor-tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+    .ftag {
+      font-size:10.5px; font-family:'El Messiri',sans-serif; font-weight:500;
+      color:#7a5530; background:rgba(201,168,76,0.08);
+      border:1px solid rgba(201,168,76,0.35);
+      padding:3px 9px; border-radius:3px; white-space:nowrap;
+    }
+
+    /* SECTION FLAVORS */
+    .section-flavors { text-align:center; margin-top:20px; }
+    .section-flavors-label { font-size:8px; letter-spacing:3px; text-transform:uppercase; color:rgba(160,128,48,0.6); display:block; margin-bottom:8px; }
+    .section-flavors .flavor-tags { justify-content:center; }
+
+    /* FOOTER */
+    .footer { text-align:center; }
+    .footer-text { font-size:9px; letter-spacing:4px; text-transform:uppercase; color:#c9a84c; }
+    .footer-sub { font-size:12px; color:#a08060; margin-top:6px; }
+
+    @media (max-width:480px) { body { padding:30px 12px 50px; } }
+
+    /* LANG STATES */
+    .en-only               { display:none; }
+    .ar-only               { display:block; }
+    .section-title-en      { display:none; }
+    .section-title-ar      { display:block; }
+    .sub-section-title-en  { display:none; }
+    .sub-section-title-ar  { display:block; }
+    .ftag-ar               { display:inline-block; }
+    .ftag-en               { display:none; }
+
+    body.en .en-only              { display:block; }
+    body.en .ar-only              { display:none; }
+    body.en .section-title-en     { display:block; }
+    body.en .section-title-ar     { display:none; }
+    body.en .sub-section-title-en { display:block; }
+    body.en .sub-section-title-ar { display:none; }
+    body.en .ftag-ar              { display:none; }
+    body.en .ftag-en              { display:inline-block; }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+
+  <!-- HEADER -->
+  <div class="header">
+    <span class="eyebrow ar-only">آيس كريم - سندوتشات</span>
+    <span class="eyebrow en-only">Ice Cream - Sandwiches</span>
+    <div class="logo-circle">
+      <img src="img/logo.jpg" alt="logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <span class="logo-fallback" style="display:none"></span>
+    </div>
+    <div class="store-title ar-only">قائمة الأصناف</div>
+    <div class="store-title en-only">Our Menu</div>
+    <div class="store-subtitle ar-only">أشهى النكهات - أحلى اللحظات</div>
+    <div class="store-subtitle en-only">Best Flavors · Sweetest Moments</div>
+    <div class="ornament">
+      <div class="ornament-line"></div>
+      <span class="ornament-icon">✦</span>
+      <div class="ornament-line rev"></div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 1: كرة آيس كريم ══ -->
+  <div class="menu-section">
+    <div class="section-header">
+      <span class="section-tag ar-only">الكلاسيكي</span>
+      <span class="section-tag en-only">Classic</span>
+      <div class="section-title-ar">آيس كريم كرة 🍨</div>
+      <div class="section-title-en">Scoop Ice Cream 🍨</div>
+    </div>
+    <hr class="section-rule">
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">كرة واحدة</div>
+        <div class="item-name en-only">Single Scoop</div>
+        <div class="item-desc ar-only">نكهه رائعة في كوب واحد</div>
+        <div class="item-desc en-only">One amazing flavor in a cup</div>
+      </div>
+      <div class="item-prices"><div class="item-price">8 د.ل</div></div>
+    </div>
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">كرتين</div>
+        <div class="item-name en-only">Double Scoop</div>
+        <div class="item-desc ar-only">نكهتان مميزتان في كوب واحد</div>
+        <div class="item-desc en-only">Two amazing flavors in one cup</div>
+      </div>
+      <div class="item-prices"><div class="item-price">10 د.ل</div></div>
+    </div>
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">ثلاث كرات</div>
+        <div class="item-name en-only">Triple Scoop</div>
+        <div class="item-desc ar-only">ثلاث نكهات شهية في كوب كبير</div>
+        <div class="item-desc en-only">Three amazing flavors in a large cup</div>
+      </div>
+      <div class="item-prices"><div class="item-price">21 د.ل</div></div>
+    </div>
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">آيس كريم طربوش</div>
+        <div class="item-name en-only">Cone Ice Cream</div>
+        <div class="item-desc ar-only">طربوش مقرمش مع كرات الآيس كريم الباردة</div>
+        <div class="item-desc en-only">Crispy cone with cold ice cream scoops</div>
+      </div>
+      <div class="item-prices"><div class="item-price">25 د.ل</div></div>
+    </div>
+
+    <div class="section-flavors">
+      <span class="section-flavors-label ar-only">النكهات المتاحة</span>
+      <span class="section-flavors-label en-only">Available Flavors</span>
+      <div class="flavor-tags">
+        <span class="ftag ftag-ar">سنكرس</span>
+        <span class="ftag ftag-ar">مارس</span>
+        <span class="ftag ftag-ar">نوتيلا</span>
+        <span class="ftag ftag-ar">لوتس</span>
+        <span class="ftag ftag-ar">كندر جوي</span>
+        <span class="ftag ftag-ar">كندر بوينو</span>
+        <span class="ftag ftag-ar">دوبله</span>
+        <span class="ftag ftag-ar">ڨانيليا</span>
+        <span class="ftag ftag-ar">فواكه غابة</span>
+        <span class="ftag ftag-ar">فراوله</span>
+        <span class="ftag ftag-ar">أناناس</span>
+        <span class="ftag ftag-ar">ليمون</span>
+        <span class="ftag ftag-ar">ياغورت</span>
+        <span class="ftag ftag-ar">كراميل</span>
+        <span class="ftag ftag-ar">مستكه</span>
+        <span class="ftag ftag-en">Snickers</span>
+        <span class="ftag ftag-en">Mars</span>
+        <span class="ftag ftag-en">Nutella</span>
+        <span class="ftag ftag-en">Lotus</span>
+        <span class="ftag ftag-en">Kinder Joy</span>
+        <span class="ftag ftag-en">Kinder Bueno</span>
+        <span class="ftag ftag-en">Duplo</span>
+        <span class="ftag ftag-en">Vanilla</span>
+        <span class="ftag ftag-en">Forest Fruits</span>
+        <span class="ftag ftag-en">Strawberry</span>
+        <span class="ftag ftag-en">Pineapple</span>
+        <span class="ftag ftag-en">Lemon</span>
+        <span class="ftag ftag-en">Yogurt</span>
+        <span class="ftag ftag-en">Caramel</span>
+        <span class="ftag ftag-en">Mastic</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ornament" style="margin-top:24px">
+    <div class="ornament-line"></div>
+    <span class="ornament-icon" style="font-size:9px;opacity:0.5">✦ ✦ ✦</span>
+    <div class="ornament-line rev"></div>
+  </div>
+
+  <!-- ══ SECTION 2: آيس كريم ماكينة ══ -->
+  <div class="menu-section">
+    <div class="section-header">
+      <span class="section-tag ar-only">ناعم وكريمي</span>
+      <span class="section-tag en-only">Smooth & Creamy</span>
+      <div class="section-title-ar">آيس كريم ماكينة 🍦</div>
+      <div class="section-title-en">Soft Serve 🍦</div>
+    </div>
+    <hr class="section-rule">
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">كوب صغير</div>
+        <div class="item-name en-only">Small Cup</div>
+        <div class="item-desc ar-only">آيس كريم ماكينة ناعم</div>
+        <div class="item-desc en-only">Smooth soft serve ice cream</div>
+      </div>
+      <div class="item-prices"><div class="item-price">5 د.ل</div></div>
+    </div>
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">كوب كبير</div>
+        <div class="item-name en-only">Large Cup</div>
+        <div class="item-desc ar-only">آيس كريم كبير</div>
+        <div class="item-desc en-only">Large soft serve ice cream</div>
+      </div>
+      <div class="item-prices"><div class="item-price">6 د.ل</div></div>
+    </div>
+
+    <div class="item">
+      <div class="item-info">
+        <div class="item-name ar-only">آيس كريم طربوش</div>
+        <div class="item-name en-only">Cone Ice Cream</div>
+        <div class="item-desc ar-only">طربوش مقرمش مع آيس كريم بارد</div>
+        <div class="item-desc en-only">Crispy cone with soft serve ice cream</div>
+      </div>
+      <div class="item-prices"><div class="item-price">7 د.ل</div></div>
+    </div>
+
+    <div class="section-flavors">
+      <span class="section-flavors-label ar-only">النكهات المتاحة</span>
+      <span class="section-flavors-label en-only">Available Flavors</span>
+      <div class="flavor-tags">
+        <span class="ftag ftag-ar">ڨانيليا</span>
+        <span class="ftag ftag-ar">شوكولاتة</span>
+        <span class="ftag ftag-ar">فراولة</span>
+        <span class="ftag ftag-ar">ميكس - أكثر من نكهة</span>
+        <span class="ftag ftag-en">Vanilla</span>
+        <span class="ftag ftag-en">Chocolate</span>
+        <span class="ftag ftag-en">Strawberry</span>
+        <span class="ftag ftag-en">Mix - Multiple Flavors</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ornament" style="margin-top:24px">
+    <div class="ornament-line"></div>
+    <span class="ornament-icon" style="font-size:9px;opacity:0.5">✦ ✦ ✦</span>
+    <div class="ornament-line rev"></div>
+  </div>
+
+  <!-- ══ SECTION 3: سندوتشات ══ -->
+  <div class="menu-section">
+    <div class="section-header">
+      <span class="section-tag ar-only">طازج وساخن</span>
+      <span class="section-tag en-only">Fresh & Hot</span>
+      <div class="section-title-ar">سندوتشات حارة 🥪</div>
+      <div class="section-title-en">Hot Sandwiches 🥪</div>
+    </div>
+    <hr class="section-rule">
+
+    <div class="item-with-tags">
+      <div class="item-top">
+        <div class="item-name ar-only">سندوتش دجاج</div>
+        <div class="item-name en-only">Chicken Sandwich</div>
+        <div class="item-prices">
+          <div class="item-price">10 د.ل</div>
+          <div class="item-price">16 د.ل</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item-with-tags">
+      <div class="item-top">
+        <div class="item-name ar-only">سندوتش لحم</div>
+        <div class="item-name en-only">Beef Sandwich</div>
+        <div class="item-prices">
+          <div class="item-price">10 د.ل</div>
+          <div class="item-price">16 د.ل</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item-with-tags">
+      <div class="item-top">
+        <div class="item-name ar-only">سندوتش فيليه</div>
+        <div class="item-name en-only">Fillet Sandwich</div>
+        <div class="item-prices">
+          <div class="item-price">12 د.ل</div>
+          <div class="item-price">18 د.ل</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ الإضافات ══ -->
+    <div class="sub-section-header">
+      <div class="sub-section-title-ar">الإضافات ✦</div>
+      <div class="sub-section-title-en">Add-ons ✦</div>
+    </div>
+    <hr class="sub-section-rule">
+
+    <div class="item-with-tags">
+      <div class="item-top">
+        <div class="item-name ar-only">جبن</div>
+        <div class="item-name en-only">Cheese</div>
+        <div class="item-prices"><div class="item-price">1 د.ل</div></div>
+      </div>
+    </div>
+
+    <div class="item-with-tags">
+      <div class="item-top">
+        <div class="item-name ar-only">صوص</div>
+        <div class="item-name en-only">Sauce</div>
+        <div class="item-prices"><div class="item-price">2 د.ل</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="ornament" style="margin-bottom:16px">
+      <div class="ornament-line"></div>
+      <span class="ornament-icon">✦</span>
+      <div class="ornament-line rev"></div>
+    </div>
+    <div class="footer-text en-only">All prices in Libyan Dinar (LYD)</div>
+    <div class="footer-sub ar-only">شكراً لزيارتكم · نتمنى لكم تجربة شهية</div>
+    <div class="footer-sub en-only">Thank you for your visit · Enjoy your meal</div>
+  </div>
+
+</div>
+
+<script>
+  let isAr = true;
+  function toggleLang() {
+    isAr = !isAr;
+    const btn = document.getElementById('langBtn');
+    if (isAr) {
+      document.documentElement.lang = 'ar';
+      document.documentElement.dir  = 'rtl';
+      document.body.classList.remove('en');
+      btn.textContent = 'EN';
+    } else {
+      document.documentElement.lang = 'en';
+      document.documentElement.dir  = 'ltr';
+      document.body.classList.add('en');
+      btn.textContent = 'عربي';
+    }
+    showBtn();
+  }
+
+  let hideTimer = null;
+  const btn = document.getElementById('langBtn');
+
+  function showBtn() {
+    btn.classList.add('visible');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      btn.classList.remove('visible');
+    }, 2500);
+  }
+
+  window.addEventListener('scroll', showBtn, { passive: true });
+  window.addEventListener('touchstart', showBtn, { passive: true });
+  window.addEventListener('click', showBtn);
+</script>
+</body>
+</html>
